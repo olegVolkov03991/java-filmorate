@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public User update(@RequestBody Film film){
+    public User update(@Valid @RequestBody Film film){
         log.info("Получен запрос к эндпоинту /film");
         checkValidFilm(film, false);
         if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
