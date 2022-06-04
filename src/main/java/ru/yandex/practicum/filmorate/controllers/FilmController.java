@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
@@ -37,11 +38,11 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film){
+    public User update(@RequestBody Film film){
         log.info("Получен запрос к эндпоинту /film");
         checkValidFilm(film, false);
         if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return (Film) filmStorage.getAllFilms();
+            return filmStorage.getFilmById(film.getId());
         } else{
             throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
         }
