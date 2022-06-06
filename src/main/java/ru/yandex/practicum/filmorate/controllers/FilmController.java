@@ -39,11 +39,11 @@ public class FilmController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody Film film){
+    public Film update(@Valid @RequestBody Film film){
         log.info("Получен запрос к эндпоинту /film");
         checkValidFilm(film, false);
         if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return filmStorage.getFilmById(film.getId());
+            return (Film) filmStorage.getAllFilms();
         } else{
             throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
         }
