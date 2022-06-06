@@ -22,7 +22,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film update(int id, Film film){
        if(Films.containsKey(id)){
            Films.put(id, film);
-           return Films.get(id);
+           return Films.get(film);
        } return null;
     }
 

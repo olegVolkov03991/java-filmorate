@@ -43,7 +43,7 @@ public class FilmController {
         log.info("Получен запрос к эндпоинту /film");
         checkValidFilm(film, false);
         if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return (Film) filmStorage.getAllFilms();
+            return film;
         } else{
             throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
         }
