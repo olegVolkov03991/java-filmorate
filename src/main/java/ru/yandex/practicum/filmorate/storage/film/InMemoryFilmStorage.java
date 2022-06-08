@@ -15,7 +15,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> Films = new HashMap<>();
 
     public Film create(int id, Film film){
-        Films.put(id, film);
+      //  Films.put(id, film);
         return Films.get(id);
     }
 
