@@ -41,9 +41,9 @@ public class FilmController {
     @PutMapping
     public Film update(@Valid @RequestBody Film film){
         log.info("Получен запрос к эндпоинту /film");
-        checkValidFilm(film, false);
+        checkValidFilm(film, true);
         if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return filmStorage.update(1 ,film);
+            return film;
         } else{
             throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
         }
