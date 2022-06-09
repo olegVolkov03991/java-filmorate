@@ -35,7 +35,8 @@ public class FilmController {
         log.info("Запрос получен к эндпоинту /film");
         checkValidFilm(film, true);
         if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
-            film.setId(film.getId());
+           // film.setId(film.getId());
+            films.put(film.getId(), film);
             return null;
         } else{
             throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
@@ -71,7 +72,7 @@ public class FilmController {
 //        return filmStorage.getAllFilms();
 //    }
 
-    private void checkValidFilm(Film film, Boolean isCreated){
+    public void checkValidFilm(Film film, Boolean isCreated){
         if(isCreated){
             for(Film getFilm:filmStorage.getAllFilms()){
                 if(film.getName().equals(getFilm.getName())&&film.getReleaseDate().equals(film.getReleaseDate())){

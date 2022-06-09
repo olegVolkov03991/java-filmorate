@@ -30,6 +30,8 @@ public class ValidationFilmsControllerTest {
     ObjectMapper objectMapper;
 
     Film film;
+    Film film1;
+    FilmStorage filmStorage;
 
     @Test
     public void TestCreateFilm() throws Exception {
@@ -47,6 +49,30 @@ public class ValidationFilmsControllerTest {
         } catch (Exception e) {
             log.info("Such a movie already exists or id has a negative value");
         }
+    }
+
+    @Test
+    public void TestUpdateFilm()throws Exception{
+        film = Film.builder()
+                .id(1)
+                .name("qwe")
+                .description("This is horror")
+                .releaseDate(LocalDate.of(2010, 12, 23))
+                .duration(120)
+                .build();
+        HashMap<Integer, Film> films = new HashMap<>();
+        films.put(1, film);
+        film1 = Film.builder()
+                .id(1)
+                .name("rty")
+                .description("This is ")
+                .releaseDate(LocalDate.of(2010, 12, 23))
+                .duration(120)
+                .build();
+
+        String body = objectMapper.writeValueAsString(film);
+
+
     }
 
     @Test
