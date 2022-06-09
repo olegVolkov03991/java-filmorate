@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +63,13 @@ public class FilmController {
 //    }
 
     @GetMapping
-    public List<Film> allFilms(){
-        return (List<Film>) filmStorage.getAllFilms();
+    public ResponseEntity<Collection<Film>>getFilms(){
+        log.debug("Returned film list "+ films.values());
+        return ResponseEntity.ok(films.values());
     }
+//    public List<Film> allFilms(){
+//        return filmStorage.getAllFilms();
+//    }
 
     private void checkValidFilm(Film film, Boolean isCreated){
         if(isCreated){
