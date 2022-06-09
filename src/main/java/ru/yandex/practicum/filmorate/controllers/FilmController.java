@@ -52,9 +52,8 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> getAll(){
-        log.info("qwe ", films.size());
-        return new ArrayList<>(films.values());
+    public List<Film> allFilm(){
+        return filmStorage.getAllFilms();
     }
 //    public ResponseEntity<Collection<Film>>getFilms(){
 //        log.debug("Returned film list "+ films.values());
