@@ -12,22 +12,22 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> Films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
     public Film create(long id, Film film){
-        Films.put(id, film);
-        return Films.get(id);
+        films.put(id, film);
+        return films.get(id);
     }
 
     public Film update(long id, Film film){
-       if(Films.containsKey(id)){
-           Films.put(id, film);
-           return Films.get(film);
+       if(films.containsKey(id)){
+           films.put(id, film);
+           return films.get(film);
        } return film;
     }
 
     public List<Film> getAllFilms(){
-        return new ArrayList<>(Films.values());
+        return (List<Film>) films.values();
     }
 
 }

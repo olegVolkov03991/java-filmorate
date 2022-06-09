@@ -53,24 +53,12 @@ public class FilmController {
         }
         return ResponseEntity.ok(film);
     }
-//    public Film update(@Valid @RequestBody Film film){
-//        log.info("Получен запрос к эндпоинту /film");
-//        checkValidFilm(film, true);
-//        if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-//            return film;
-//        } else{
-//            throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
-//        }
-//    }
 
     @GetMapping
     public ResponseEntity<Collection<Film>>getFilms(){
         log.debug("Returned film list "+ films.values());
         return ResponseEntity.ok(films.values());
     }
-//    public List<Film> allFilms(){
-//        return filmStorage.getAllFilms();
-//    }
 
     public void checkValidFilm(Film film, Boolean isCreated){
         if(isCreated){
