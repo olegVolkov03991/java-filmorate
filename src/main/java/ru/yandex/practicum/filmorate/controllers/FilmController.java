@@ -43,7 +43,7 @@ public class FilmController {
     @PutMapping
     public ResponseEntity<Film> update(@Validated @RequestBody Film film) throws ValidationException{
         if(films.containsKey(film.getId())){
-            log.debug("Updating film data ID "+film.getId());
+            log.debug("Updating film data ID "+film);
             films.put(film.getId(), film);
         }else {
             throw new ValidationException(String.format("Update dailed: user with ID" , film.getId()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -52,7 +52,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> allFilm(){
+    public List<Film> allFilms(){
         return filmStorage.getAllFilms();
     }
 //    public ResponseEntity<Collection<Film>>getFilms(){

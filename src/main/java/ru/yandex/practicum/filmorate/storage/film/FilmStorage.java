@@ -9,8 +9,8 @@ public interface FilmStorage {
 
     Film create(long id, Film film);
 
-    Film update(long id, Film film);
-
     List<Film> getAllFilms();
+
+    Film update(long id, Film film);
 
 }

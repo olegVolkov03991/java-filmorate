@@ -11,22 +11,22 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Integer, User> mapUsers = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     public User create(int id, User user){
-        mapUsers.put(id, user);
-        return mapUsers.get(id);
+        users.put(id, user);
+        return users.get(id);
     }
 
     public User update(int id, User user){
-        if(mapUsers.containsKey(id)){
-            mapUsers.put(id, user);
-            return mapUsers.get(id);
+        if(users.containsKey(id)){
+            users.put(id, user);
+            return users.get(id);
         } return null;
     }
 
     public List<User> getAllUsers(){
-        return new ArrayList<>(mapUsers.values());
+        return new ArrayList<>(users.values());
     }
 
     @Override
