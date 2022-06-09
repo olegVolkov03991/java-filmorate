@@ -64,7 +64,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> allFilms(){
-        return filmStorage.getAllFilms();
+        return List.copyOf(films.values());
     }
 
     public void checkValidFilm(Film film, Boolean isCreated){
