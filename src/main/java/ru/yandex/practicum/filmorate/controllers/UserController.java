@@ -56,7 +56,7 @@ public class UserController {
         if(isCreated){
             for(User getUser : userStorage.getAllUsers()){
                 if(user.getEmail().equals(getUser.getEmail())){
-                    throw new ValidationException("Такой пользователь уже есть");
+                    throw new ValidationException("Такой пользователь уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
         }
@@ -64,13 +64,13 @@ public class UserController {
             user.setName(user.getLogin());
         }
         if(user.getLogin().isEmpty() || user.getLogin().isBlank()){
-            throw new ValidationException("Проверьте логин");
+            throw new ValidationException("Проверьте логин", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(user.getBirthday().isAfter(LocalDate.now())){
-            throw new ValidationException("Проверьте дату рождения");
+            throw new ValidationException("Проверьте дату рождения", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(user.getEmail().isEmpty() || !user.getEmail().contains("@")){
-            throw new ValidationException("Проверьте почту");
+            throw new ValidationException("Проверьте почту", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -1,23 +1,26 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
-    private int id = 1;
+    private final Map<Long, Film> films = new HashMap<>();
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
     private final FilmStorage filmStorage;
@@ -30,8 +33,8 @@ public class FilmController {
     public Film create(@RequestBody Film film){
         log.info("Запрос получен к эндпоинту /film");
         checkValidFilm(film, true);
-        if(filmStorage.create(id, film)!=null && film.getId()>0){
-            film.setId(id);
+        if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
+            film.setId(film.getId());
             return null;
         } else{
             throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
@@ -39,15 +42,24 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film){
-        log.info("Получен запрос к эндпоинту /film");
-        checkValidFilm(film, true);
-        if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return film;
-        } else{
-            throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
+    public ResponseEntity<Film> updateFilm(@Validated @RequestBody Film film) throws ValidationException{
+        if(films.containsKey(film.getId())){
+            log.debug("Updating film data ID "+film.getId());
+            films.put((long) film.getId(), film);
+        }else {
+            throw new ValidationException(String.format("Update dailed: user with ID" , film.getId()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return ResponseEntity.ok(film);
     }
+//    public Film update(@Valid @RequestBody Film film){
+//        log.info("Получен запрос к эндпоинту /film");
+//        checkValidFilm(film, true);
+//        if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
+//            return film;
+//        } else{
+//            throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
+//        }
+//    }
 
     @GetMapping
     public List<Film> allFilms(){
@@ -58,23 +70,23 @@ public class FilmController {
         if(isCreated){
             for(Film getFilm:filmStorage.getAllFilms()){
                 if(film.getName().equals(getFilm.getName())&&film.getReleaseDate().equals(film.getReleaseDate())){
-                    throw new ValidationException("такой фильм уже есть");
+                    throw new ValidationException("такой фильм уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
         }
 
         if(film.getReleaseDate().isBefore(startFilmDate)){
-            throw new ValidationException("Релиз раньше 28 декабря 1895 года");
+            throw new ValidationException("Релиз раньше 28 декабря 1895 года", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(film.getDuration()<=0){
-            throw new ValidationException("Отрицательная продолжительность фильма");
+            throw new ValidationException("Отрицательная продолжительность фильма", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(film.getName().isEmpty()){
-            throw new ValidationException("Имя не может быть пустым");
+            throw new ValidationException("Имя не может быть пустым", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if(film.getDescription().length() > 200){
-            throw new ValidationException("Описание не может привышать 200 символов");
+            throw new ValidationException("Описание не может привышать 200 символов", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
