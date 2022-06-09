@@ -61,7 +61,8 @@ public class UserController {
 
     @GetMapping
     public List<User> allUsers(){
-        return userStorage.getAllUsers();
+        //return userStorage.getAllUsers();
+        return List.copyOf(users.values());
     }
 
     private void checkValidUser(User user, Boolean isCreated){
