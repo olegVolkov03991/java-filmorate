@@ -55,9 +55,13 @@ public class FilmController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Film>>getFilms(){
-        System.out.println(films.values());
-        return ResponseEntity.ok(films.values());
+    public Collection<Film> getAll(){
+        log.info("qwe ", films.size());
+        return films.values();
+    }
+//    public ResponseEntity<Collection<Film>>getFilms(){
+//        log.debug("Returned film list "+ films.values());
+//        return ResponseEntity.ok(films.values());
     }
 
     public void checkValidFilm(Film film, Boolean isCreated){
