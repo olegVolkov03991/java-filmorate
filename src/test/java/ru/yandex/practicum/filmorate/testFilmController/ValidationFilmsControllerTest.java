@@ -58,7 +58,7 @@ public class ValidationFilmsControllerTest {
     }
 
     @Test
-    public void TestGetAllFilm() throws Exception{
+    public void TestGetAllFilm(){
         film = Film.builder()
                 .id(1)
                 .name("qwe 1")
@@ -81,18 +81,7 @@ public class ValidationFilmsControllerTest {
                 .releaseDate(LocalDate.of(2010, 12, 23))
                 .duration(120)
                 .build();
-//        map.put(film.getId(), film);
-//        map.put(film1.getId(), film1);
-//        System.out.println(map);
-//        System.out.println("///////");
-//        System.out.println(map.values());
-//        System.out.println("////////");
-//       filmStorage.create(film1.getId(), film1);
-//       filmStorage.create(film.getId(), film);
-//        System.out.println(filmStorage.getAllFilms());
-//        System.out.println("////////////////////");
         filmController.create(film2);
-      //  filmController.create(film);
         filmController.create(film1);
         System.out.println(filmController.allFilms());
 

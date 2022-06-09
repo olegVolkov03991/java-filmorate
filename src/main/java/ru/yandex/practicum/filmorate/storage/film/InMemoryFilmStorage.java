@@ -8,14 +8,14 @@ import java.util.*;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
 
-    public Film create(long id, Film film){
+    public Film create(int id, Film film){
         films.put(id, film);
         return films.get(id);
     }
 
-    public Film update(long id, Film film){
+    public Film update(int id, Film film){
        if(films.containsKey(id)){
            films.put(id, film);
            return films.get(film);

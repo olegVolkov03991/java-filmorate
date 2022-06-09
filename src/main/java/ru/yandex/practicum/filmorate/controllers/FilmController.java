@@ -20,8 +20,8 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
 
-    private long id;
-    private final Map<Long, Film> films = new HashMap<>();
+    private int id;
+    private final Map<Integer, Film> films = new HashMap<>();
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
     private final FilmStorage filmStorage;
@@ -30,7 +30,7 @@ public class FilmController {
         this.filmStorage = filmStorage;
     }
 
-    @PostMapping
+    @PostMapping(value = "/films")
     public Film create(@Valid @RequestBody Film film){
         log.info("Запрос получен к эндпоинту /film");
         id++;
@@ -38,19 +38,10 @@ public class FilmController {
         films.put(id, film);
         log.debug("Add id: {}", film.getId());
         return film;
-
-//       // checkValidFilm(film, true);
-//        if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
-//           // film.setId(film.getId());
-//            films.put(film.getId(), film);
-//            return film;
-//        } else{
-//            throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
-//        }
     }
 
-    @PutMapping
-    public Film update(@Validated @RequestBody Film film){
+    @PutMapping(value = "/films")
+    public Film update(@Valid @RequestBody Film film){
         try {
             if(film.getId() < 1){
                 throw new ValidationException("Film id less then 1", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,16 +52,9 @@ public class FilmController {
             log.warn(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         } return film;
-//        if(film.getId() < 1){
-//            log.debug("Updating film data ID " + film);
-//            films.put(film.getId(), film);
-//        }else {
-//            throw new ValidationException(String.format("Update dailed: user with ID" , film.getId()), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return film;
     }
 
-    @GetMapping
+    @GetMapping("/films")
     public List<Film> allFilms(){
         return List.copyOf(films.values());
     }
