@@ -56,7 +56,7 @@ public class FilmController {
 
     @GetMapping
     public ResponseEntity<Collection<Film>>getFilms(){
-        log.debug("Returned film list "+ films.values());
+        System.out.println(films.values());
         return ResponseEntity.ok(films.values());
     }
 
