@@ -37,7 +37,7 @@ public class FilmController {
         if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
            // film.setId(film.getId());
             films.put(film.getId(), film);
-            return null;
+            return film;
         } else{
             throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
         }
@@ -57,12 +57,12 @@ public class FilmController {
     @GetMapping
     public Collection<Film> getAll(){
         log.info("qwe ", films.size());
-        return films.values();
+        return filmStorage.getAllFilms();
     }
 //    public ResponseEntity<Collection<Film>>getFilms(){
 //        log.debug("Returned film list "+ films.values());
 //        return ResponseEntity.ok(films.values());
-    }
+
 
     public void checkValidFilm(Film film, Boolean isCreated){
         if(isCreated){
