@@ -11,10 +11,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -57,7 +54,7 @@ public class FilmController {
     @GetMapping
     public Collection<Film> getAll(){
         log.info("qwe ", films.size());
-        return films.values();
+        return new ArrayList<>(films.values());
     }
 //    public ResponseEntity<Collection<Film>>getFilms(){
 //        log.debug("Returned film list "+ films.values());
