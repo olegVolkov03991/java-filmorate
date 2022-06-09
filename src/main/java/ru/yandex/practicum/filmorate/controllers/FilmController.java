@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -19,6 +20,7 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
 
+    private long id;
     private final Map<Long, Film> films = new HashMap<>();
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
@@ -29,16 +31,22 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film){
+    public Film create(@Valid @RequestBody Film film){
         log.info("Запрос получен к эндпоинту /film");
-        checkValidFilm(film, true);
-        if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
-           // film.setId(film.getId());
-            films.put(film.getId(), film);
-            return film;
-        } else{
-            throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
-        }
+        id++;
+        film.setId(id);
+        films.put(id, film);
+        log.debug("Add id: {}", film.getId());
+        return film;
+
+//       // checkValidFilm(film, true);
+//        if(filmStorage.create(film.getId(), film)!=null && film.getId()>0){
+//           // film.setId(film.getId());
+//            films.put(film.getId(), film);
+//            return film;
+//        } else{
+//            throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
+//        }
     }
 
     @PutMapping
