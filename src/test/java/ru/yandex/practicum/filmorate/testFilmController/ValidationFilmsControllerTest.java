@@ -9,11 +9,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,7 +34,10 @@ public class ValidationFilmsControllerTest {
 
     Film film;
     Film film1;
-    FilmStorage filmStorage;
+    Film film2;
+    FilmStorage filmStorage = new InMemoryFilmStorage();
+    Map<Long, Film> map = new HashMap<>();
+    FilmController filmController = new FilmController(filmStorage);
 
     @Test
     public void TestCreateFilm() throws Exception {
@@ -49,6 +55,46 @@ public class ValidationFilmsControllerTest {
         } catch (Exception e) {
             log.info("Such a movie already exists or id has a negative value");
         }
+    }
+
+    @Test
+    public void TestGetAllFilm() throws Exception{
+        film = Film.builder()
+                .id(1)
+                .name("qwe 1")
+                .description("This is horror")
+                .releaseDate(LocalDate.of(2010, 12, 23))
+                .duration(120)
+                .build();
+
+        film1 = Film.builder()
+                .id(2)
+                .name("qe 1")
+                .description("Ts is horror")
+                .releaseDate(LocalDate.of(2010, 12, 23))
+                .duration(120)
+                .build();
+        film2 = Film.builder()
+                .id(3)
+                .name("q 1")
+                .description("Tis horror")
+                .releaseDate(LocalDate.of(2010, 12, 23))
+                .duration(120)
+                .build();
+        map.put(film.getId(), film);
+        map.put(film1.getId(), film1);
+        System.out.println(map);
+        System.out.println("///////");
+        System.out.println(map.values());
+        System.out.println("////////");
+       filmStorage.create(film1.getId(), film1);
+       filmStorage.create(film.getId(), film);
+        System.out.println(filmStorage.getAllFilms());
+        System.out.println("////////////////////");
+        filmController.create(film2);
+        System.out.println(filmController.allFilms());
+
+
     }
 
     @Test
