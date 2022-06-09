@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -41,14 +42,24 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<Film> update(@Validated @RequestBody Film film) throws ValidationException{
-        if(films.containsKey(film.getId())){
-            log.debug("Updating film data ID " + film);
+    public Film update(@Validated @RequestBody Film film){
+        try {
+            if(film.getId() < 1){
+                throw new ValidationException("Film id less then 1", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             films.put(film.getId(), film);
-        }else {
-            throw new ValidationException(String.format("Update dailed: user with ID" , film.getId()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.ok(film);
+            log.debug("Film with id {} was updated", film.getId());
+        } catch (ValidationException e){
+            log.warn(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } return film;
+//        if(film.getId() < 1){
+//            log.debug("Updating film data ID " + film);
+//            films.put(film.getId(), film);
+//        }else {
+//            throw new ValidationException(String.format("Update dailed: user with ID" , film.getId()), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return film;
     }
 
     @GetMapping
