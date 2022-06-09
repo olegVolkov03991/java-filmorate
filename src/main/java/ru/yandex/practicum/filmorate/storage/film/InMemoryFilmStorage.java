@@ -12,7 +12,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film create(long id, Film film){
         films.put(id, film);
-        return film;
+        return films.get(id);
     }
 
     public Film update(long id, Film film){

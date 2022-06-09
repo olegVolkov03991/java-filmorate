@@ -9,15 +9,21 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import javax.swing.*;
+import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 
 public class UserController {
-    private int id;
+    private long id;
+
+    Map<Long, User> users = new HashMap<>();
 
     private final UserStorage userStorage;
 
@@ -26,15 +32,20 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user){
+    public User create(@Valid @RequestBody User user){
         log.info("запрос получен к эндпоинту /user");
-        checkValidUser(user, true);
-        if(userStorage.create(id, user)!=null || user.getId()<0){
-            user.setId(id);
-            return null;
-        } else {
-            throw new NotFoundObjectException("такой пользователь уже есть или id имеет отрицательное значение");
-        }
+        id++;
+        user.setId(id);
+        users.put(id, user);
+        log.debug("Add id:", user.getId());
+        return user;
+//        checkValidUser(user, true);
+//        if(userStorage.create(id, user)!=null || user.getId()<0){
+//            user.setId(id);
+//            return null;
+//        } else {
+//            throw new NotFoundObjectException("такой пользователь уже есть или id имеет отрицательное значение");
+//        }
     }
 
     @PutMapping

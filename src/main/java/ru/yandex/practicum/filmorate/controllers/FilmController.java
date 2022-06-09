@@ -79,7 +79,7 @@ public class FilmController {
         if(isCreated){
             for(Film getFilm:filmStorage.getAllFilms()){
                 if(film.getName().equals(getFilm.getName())&&film.getReleaseDate().equals(film.getReleaseDate())){
-                    throw new ValidationException("такой фильм уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ValidationException("Такой фильм уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
         }

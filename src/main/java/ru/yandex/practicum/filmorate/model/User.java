@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class User {
-    private int id;
+    private long id;
     @NotBlank
     @NonNull
     @Size(min = 1, max = 200)
