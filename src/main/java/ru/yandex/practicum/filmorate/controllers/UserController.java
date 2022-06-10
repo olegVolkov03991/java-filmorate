@@ -39,13 +39,6 @@ public class UserController {
         users.put(id, user);
         log.debug("Add id:", user.getId());
         return user;
-//        checkValidUser(user, true);
-//        if(userStorage.create(id, user)!=null || user.getId()<0){
-//            user.setId(id);
-//            return null;
-//        } else {
-//            throw new NotFoundObjectException("такой пользователь уже есть или id имеет отрицательное значение");
-//        }
     }
 
     @PutMapping
