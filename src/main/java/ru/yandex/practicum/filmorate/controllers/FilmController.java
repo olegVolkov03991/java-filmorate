@@ -36,7 +36,7 @@ public class FilmController {
         id++;
         film.setId(id);
         films.put(id, film);
-        log.debug("Add id: {}", film.getId());
+        log.debug("Add id: ", film.getId());
         return film;
     }
 
@@ -47,7 +47,7 @@ public class FilmController {
                 throw new ValidationException("Film id less then 1", HttpStatus.INTERNAL_SERVER_ERROR);
             }
             films.put(film.getId(), film);
-            log.debug("Film with id {} was updated", film.getId());
+            log.debug("Film updated  ", film.getId());
         } catch (ValidationException e){
             log.warn(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,8 +56,8 @@ public class FilmController {
 
     @GetMapping("/films")
     public List<Film> allFilms(){
-     //   System.out.println(films);
-        return List.copyOf(films.values());
+       // return List.copyOf(films.values());
+        return new ArrayList<>(films.values());
     }
 
     public void checkValidFilm(Film film, Boolean isCreated){
