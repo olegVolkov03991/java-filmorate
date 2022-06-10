@@ -56,7 +56,7 @@ public class FilmController {
 
     @GetMapping("/films")
     public List<Film> allFilms(){
-        System.out.println(films);
+     //   System.out.println(films);
         return List.copyOf(films.values());
     }
 

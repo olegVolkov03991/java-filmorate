@@ -66,23 +66,7 @@ public class ValidationFilmsControllerTest {
                 .releaseDate(LocalDate.of(2010, 12, 23))
                 .duration(120)
                 .build();
-
-        film1 = Film.builder()
-                .id(1)
-                .name("qe 1")
-                .description("Ts is horror")
-                .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(120)
-                .build();
-        film2 = Film.builder()
-                .id(3)
-                .name("q 1")
-                .description("Tis horror")
-                .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(120)
-                .build();
-        filmController.create(film2);
-        filmController.create(film1);
+        filmController.create(film);
         System.out.println(filmController.allFilms());
 
 
