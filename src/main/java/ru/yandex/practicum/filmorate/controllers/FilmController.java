@@ -54,7 +54,7 @@ public class FilmController {
         } return film;
     }
 
-    @GetMapping("/films")
+    @GetMapping(value = "/films")
     public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
         int a = 0;
