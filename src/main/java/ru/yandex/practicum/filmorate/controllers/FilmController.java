@@ -2,18 +2,18 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -60,10 +60,6 @@ public class FilmController {
         int a = 0;
         for(int i = 0; i < films.size(); i++){
             a++;
-        }
-        for(Map.Entry<Integer, Film> e: films.entrySet()){
-            System.out.println(e.getKey());
-            System.out.println(e.getValue());
         }
         System.out.println("total films: " + a);
         return new ArrayList<>(films.values());
