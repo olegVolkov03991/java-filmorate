@@ -55,7 +55,7 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    public ArrayList<Film> allFilms(){
+    public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
         return new ArrayList<>(films.values());
     }
