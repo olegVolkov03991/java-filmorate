@@ -32,7 +32,7 @@ public class FilmController {
 
     @PostMapping(value = "/films")
     public Film create(@Valid @RequestBody Film film){
-        log.info("Запрос получен к эндпоинту /film");
+        log.info("Запрос получен к эндпоинту /films");
         id++;
         film.setId(id);
         films.put(id, film);
@@ -55,8 +55,8 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    public List<Film> allFilms(){
-       // return List.copyOf(films.values());
+    public ArrayList<Film> allFilms(){
+        log.info("Запрос получен к эндпоинту /films");
         return new ArrayList<>(films.values());
     }
 
