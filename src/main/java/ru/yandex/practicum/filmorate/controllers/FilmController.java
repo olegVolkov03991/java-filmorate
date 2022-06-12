@@ -61,6 +61,10 @@ public class FilmController {
         for(int i = 0; i < films.size(); i++){
             a++;
         }
+        for(Map.Entry<Integer, Film> e: films.entrySet()){
+            System.out.println(e.getKey());
+            System.out.println(e.getValue());
+        }
         System.out.println("total films: " + a);
         return new ArrayList<>(films.values());
     }
