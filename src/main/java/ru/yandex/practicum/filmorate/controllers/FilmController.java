@@ -57,6 +57,11 @@ public class FilmController {
     @GetMapping("/films")
     public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
+        int a = 0;
+        for(int i = 0; i < films.size(); i++){
+            a++;
+        }
+        System.out.println("total films: " + a);
         return new ArrayList<>(films.values());
     }
 
