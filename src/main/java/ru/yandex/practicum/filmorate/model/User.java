@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
+import org.junit.Before;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
@@ -18,8 +16,8 @@ public class User {
     @Size(min = 1, max = 200)
     @Email()
     private String email;
-    @NotEmpty
-    @NonNull
+    @NotBlank
+    @Pattern(regexp = "//S*$")
     private String login;
     private String name;
     @NonNull

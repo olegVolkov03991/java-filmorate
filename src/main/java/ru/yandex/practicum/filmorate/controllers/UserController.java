@@ -50,8 +50,12 @@ public class UserController {
     @PutMapping
     public ResponseEntity<User> update(@Valid @RequestBody User user){
         log.info("получен запрос к энпоинту /users");
-        users.put(user.getId(), user);
-        return ResponseEntity.ok().body(user);
+        if(!users.containsKey(user.getId())){
+            log.info("ошибка обновления: " + user.getId());
+        }
+            users.put(user.getId(), user);
+            return ResponseEntity.ok().body(user);
+
 //        checkValidUser(user, false);
 //        if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
 //            return userStorage.getUserById(user.getId());

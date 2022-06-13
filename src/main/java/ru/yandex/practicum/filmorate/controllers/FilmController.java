@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -31,13 +32,20 @@ public class FilmController {
     }
 
     @PostMapping(value = "/films")
-    public Film create(@Valid @RequestBody Film film){
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film){
         log.info("Запрос получен к эндпоинту /films");
         id++;
-        film.setId(id);
-        films.put(id, film);
-        log.debug("Add id: ", film.getId());
-        return film;
+        if(films.containsKey(film.getId())){
+            log.info("ошибка добавления: " + film.getName());
+            return ResponseEntity.badRequest().body(film);
+        }
+        films.put(film.getId(), film);
+        return ResponseEntity.ok().body(film);
+//        film.setId(id);
+//        films.put(id, film);
+//        log.debug("Add id: ", film.getId());
+//        return film;
+      //  return null;
     }
 
     @PutMapping(value = "/films")
