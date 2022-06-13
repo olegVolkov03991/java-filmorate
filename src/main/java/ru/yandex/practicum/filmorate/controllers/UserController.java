@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user){
-        log.info("запрос получен к эндпоинту /user");
+        log.info("запрос получен к эндпоинту /users");
         id++;
         user.setId(id);
         users.put(id, user);
@@ -43,7 +43,7 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user){
-        log.info("получен запрос к энпоинту /user");
+        log.info("получен запрос к энпоинту /users");
         checkValidUser(user, false);
         if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
             return userStorage.getUserById(user.getId());
