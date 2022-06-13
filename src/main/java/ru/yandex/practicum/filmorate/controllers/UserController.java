@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user){
+    public User update(@Valid @RequestBody User user){
         log.info("получен запрос к энпоинту /user");
         checkValidUser(user, false);
         if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
@@ -54,7 +54,6 @@ public class UserController {
 
     @GetMapping
     public List<User> allUsers(){
-        //return userStorage.getAllUsers();
         return List.copyOf(users.values());
     }
 
