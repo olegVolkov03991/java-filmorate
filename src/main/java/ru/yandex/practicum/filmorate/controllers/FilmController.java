@@ -33,8 +33,10 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<Film> create(@Valid @RequestBody Film film){
+        checkValidFilm(film, false);
         log.info("Запрос получен к эндпоинту /films");
         id++;
+        film.setId(id);
         if(films.containsKey(film.getId())){
             log.info("ошибка добавления: " + film.getName());
             return ResponseEntity.badRequest().body(film);
@@ -64,27 +66,10 @@ public class FilmController {
         return new ArrayList<>(films.values());
     }
 
-    public void checkValidFilm(Film film, Boolean isCreated){
-        if(isCreated){
-            for(Film getFilm:filmStorage.getAllFilms()){
-                if(film.getName().equals(getFilm.getName())&&film.getReleaseDate().equals(film.getReleaseDate())){
-                    throw new ValidationException("Такой фильм уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-        }
+    public void checkValidFilm(Film film, Boolean isCreated) {
 
-        if(film.getReleaseDate().isBefore(startFilmDate)){
+        if (film.getReleaseDate().isBefore(startFilmDate)) {
             throw new ValidationException("Релиз раньше 28 декабря 1895 года", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if(film.getDuration()<=0){
-            throw new ValidationException("Отрицательная продолжительность фильма", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if(film.getName().isEmpty()){
-            throw new ValidationException("Имя не может быть пустым", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        if(film.getDescription().length() > 200){
-            throw new ValidationException("Описание не может привышать 200 символов", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

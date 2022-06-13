@@ -11,8 +11,8 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,10 +31,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@Valid @RequestBody User user){
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("запрос получен к эндпоинту /users");
-        if(users.containsKey(user.getId())){
-            log.info("оОшибка добавления: " + user.getName());
+        checkValidUser(user, true);
+        id++;
+        user.setId(id);
+        if (users.containsKey(user.getId())) {
+            log.info("Ошибка добавления: " + user.getName());
             return ResponseEntity.badRequest().body(user);
         }
         users.put(user.getId(), user);
@@ -42,18 +45,21 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<User> update(@Valid @RequestBody User user){
+    public ResponseEntity<User> update(@Valid @RequestBody User user) throws Exception {
         log.info("получен запрос к энпоинту /users");
-        if(!users.containsKey(user.getId())){
+        if (user.getId() < 0) {
+            throw new Exception("Оштбка сервера");
+        }
+        if (!users.containsKey(user.getId())) {
             log.info("ошибка обновления: " + user.getId());
         }
-            users.put(user.getId(), user);
-            return ResponseEntity.ok().body(user);
+        users.put(user.getId(), user);
+        return ResponseEntity.ok().body(user);
     }
 
     @GetMapping
-    public List<User> allUsers(){
-        return List.copyOf(users.values());
+    public ArrayList<User> allUsers() {
+        return new ArrayList<>(users.values());
     }
 
     private void checkValidUser(User user, Boolean isCreated){
