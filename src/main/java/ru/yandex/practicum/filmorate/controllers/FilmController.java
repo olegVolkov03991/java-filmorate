@@ -31,7 +31,7 @@ public class FilmController {
         this.filmStorage = filmStorage;
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public ResponseEntity<Film> create(@Valid @RequestBody Film film){
         log.info("Запрос получен к эндпоинту /films");
         id++;
@@ -41,14 +41,9 @@ public class FilmController {
         }
         films.put(film.getId(), film);
         return ResponseEntity.ok().body(film);
-//        film.setId(id);
-//        films.put(id, film);
-//        log.debug("Add id: ", film.getId());
-//        return film;
-      //  return null;
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping
     public Film update(@Valid @RequestBody Film film){
         try {
             if(film.getId() < 1){
@@ -62,7 +57,7 @@ public class FilmController {
         } return film;
     }
 
-    @GetMapping(value = "/films")
+    @GetMapping
     public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
         System.out.println("total films: " + films.size());

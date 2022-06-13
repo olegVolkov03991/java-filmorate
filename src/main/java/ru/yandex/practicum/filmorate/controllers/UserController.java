@@ -39,12 +39,6 @@ public class UserController {
         }
         users.put(user.getId(), user);
         return ResponseEntity.ok().body(user);
-//        id++;
-//        user.setId(id);
-//        users.put(id, user);
-//        log.debug("Add id:", user.getId());
-//        return user;
-       // return null;
     }
 
     @PutMapping
@@ -55,13 +49,6 @@ public class UserController {
         }
             users.put(user.getId(), user);
             return ResponseEntity.ok().body(user);
-
-//        checkValidUser(user, false);
-//        if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
-//            return userStorage.getUserById(user.getId());
-//        } else{
-//            throw new NotFoundObjectException("Такого пользователя нет или id отрицательный");
-//        }
     }
 
     @GetMapping
