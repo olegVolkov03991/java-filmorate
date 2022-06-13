@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import javax.swing.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -32,13 +32,20 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user){
+    public ResponseEntity<User> create(@Valid @RequestBody User user){
         log.info("запрос получен к эндпоинту /users");
-        id++;
-        user.setId(id);
-        users.put(id, user);
-        log.debug("Add id:", user.getId());
-        return user;
+        if(users.containsKey(user.getId())){
+            log.info("оОшибка добавления: " + user.getName());
+            return ResponseEntity.badRequest().body(user);
+        }
+        users.put(user.getId(), user);
+        return ResponseEntity.ok().body(user);
+//        id++;
+//        user.setId(id);
+//        users.put(id, user);
+//        log.debug("Add id:", user.getId());
+//        return user;
+       // return null;
     }
 
     @PutMapping
