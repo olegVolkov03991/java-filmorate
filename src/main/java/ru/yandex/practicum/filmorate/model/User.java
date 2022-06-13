@@ -23,5 +23,6 @@ public class User {
     @NonNull
     private String login;
     private String name;
+    @NonNull
     private LocalDate birthday;
 }
