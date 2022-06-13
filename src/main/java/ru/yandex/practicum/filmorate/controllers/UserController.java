@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -49,14 +48,16 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user){
+    public ResponseEntity<User> update(@Valid @RequestBody User user){
         log.info("получен запрос к энпоинту /users");
-        checkValidUser(user, false);
-        if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
-            return userStorage.getUserById(user.getId());
-        } else{
-            throw new NotFoundObjectException("Такого пользователя нет или id отрицательный");
-        }
+        users.put(user.getId(), user);
+        return ResponseEntity.ok().body(user);
+//        checkValidUser(user, false);
+//        if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
+//            return userStorage.getUserById(user.getId());
+//        } else{
+//            throw new NotFoundObjectException("Такого пользователя нет или id отрицательный");
+//        }
     }
 
     @GetMapping
