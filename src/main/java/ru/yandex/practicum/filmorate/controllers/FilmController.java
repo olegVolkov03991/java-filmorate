@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.IdGenerator;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -26,17 +25,10 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
-    private final FilmStorage filmStorage;
-
-    public FilmController(FilmStorage filmStorage){
-        this.filmStorage = filmStorage;
-    }
-
     @PostMapping
     public ResponseEntity<Film> create(@Valid @RequestBody Film film){
         checkValidFilm(film, false);
         log.info("Запрос получен к эндпоинту /films");
-        //id++;
         film.setId(id.generator());
         if(films.containsKey(film.getId())){
             log.info("ошибка добавления: " + film.getName());
@@ -68,7 +60,6 @@ public class FilmController {
     }
 
     public void checkValidFilm(Film film, Boolean isCreated) {
-
         if (film.getReleaseDate().isBefore(startFilmDate)) {
             throw new ValidationException("Релиз раньше 28 декабря 1895 года");
         }

@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.controllers;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.IdGenerator;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -24,12 +22,6 @@ public class UserController {
     IdGenerator id = new IdGenerator();
 
     Map<Long, User> users = new HashMap<>();
-
-    private final UserStorage userStorage;
-
-    public UserController(UserStorage userStorage){
-        this.userStorage = userStorage;
-    }
 
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
@@ -48,10 +40,10 @@ public class UserController {
     public ResponseEntity<User> update(@Valid @RequestBody User user) throws Exception {
         log.info("получен запрос к энпоинту /users");
         if (user.getId() < 0) {
-            throw new Exception("Оштбка сервера");
+            throw new Exception("Ошибка сервера");
         }
         if (!users.containsKey(user.getId())) {
-            log.info("ошибка обновления: " + user.getId());
+            log.info("Ошибка обновления: " + user.getId());
         }
         users.put(user.getId(), user);
         return ResponseEntity.ok().body(user);
@@ -63,13 +55,6 @@ public class UserController {
     }
 
     private void checkValidUser(User user, Boolean isCreated){
-        if(isCreated){
-            for(User getUser : userStorage.getAllUsers()){
-                if(user.getEmail().equals(getUser.getEmail())){
-                    throw new ValidationException("Такой пользователь уже есть");
-                }
-            }
-        }
         if(user.getName()==null||user.getName().isBlank()||user.getName().isEmpty()){
             user.setName(user.getLogin());
         }
