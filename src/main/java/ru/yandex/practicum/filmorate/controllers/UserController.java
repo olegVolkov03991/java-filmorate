@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
@@ -20,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/users")
 
 public class UserController {
-    private long id;
+    IdGenerator id = new IdGenerator();
 
     Map<Long, User> users = new HashMap<>();
 
@@ -34,8 +35,7 @@ public class UserController {
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("запрос получен к эндпоинту /users");
         checkValidUser(user, true);
-        id++;
-        user.setId(id);
+        user.setId(id.generator());
         if (users.containsKey(user.getId())) {
             log.info("Ошибка добавления: " + user.getName());
             return ResponseEntity.badRequest().body(user);
@@ -66,7 +66,7 @@ public class UserController {
         if(isCreated){
             for(User getUser : userStorage.getAllUsers()){
                 if(user.getEmail().equals(getUser.getEmail())){
-                    throw new ValidationException("Такой пользователь уже есть", HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ValidationException("Такой пользователь уже есть");
                 }
             }
         }
@@ -74,13 +74,13 @@ public class UserController {
             user.setName(user.getLogin());
         }
         if(user.getLogin().isEmpty() || user.getLogin().isBlank()){
-            throw new ValidationException("Проверьте логин", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ValidationException("Проверьте логин");
         }
         if(user.getBirthday().isAfter(LocalDate.now())){
-            throw new ValidationException("Проверьте дату рождения", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ValidationException("Проверьте дату рождения");
         }
         if(user.getEmail().isEmpty() || !user.getEmail().contains("@")){
-            throw new ValidationException("Проверьте почту", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ValidationException("Проверьте почту");
         }
     }
 }

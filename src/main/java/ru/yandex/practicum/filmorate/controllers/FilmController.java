@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.IdGenerator;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
@@ -21,7 +22,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
-    private int id;
+    IdGenerator id = new IdGenerator();
     private final Map<Integer, Film> films = new HashMap<>();
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
@@ -35,8 +36,8 @@ public class FilmController {
     public ResponseEntity<Film> create(@Valid @RequestBody Film film){
         checkValidFilm(film, false);
         log.info("Запрос получен к эндпоинту /films");
-        id++;
-        film.setId(id);
+        //id++;
+        film.setId(id.generator());
         if(films.containsKey(film.getId())){
             log.info("ошибка добавления: " + film.getName());
             return ResponseEntity.badRequest().body(film);
@@ -49,7 +50,7 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film film){
         try {
             if(film.getId() < 1){
-                throw new ValidationException("Film id less then 1", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ValidationException("Film id less then 1");
             }
             films.put(film.getId(), film);
             log.debug("Film updated  ", film.getId());
@@ -69,7 +70,7 @@ public class FilmController {
     public void checkValidFilm(Film film, Boolean isCreated) {
 
         if (film.getReleaseDate().isBefore(startFilmDate)) {
-            throw new ValidationException("Релиз раньше 28 декабря 1895 года", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ValidationException("Релиз раньше 28 декабря 1895 года");
         }
     }
 }
