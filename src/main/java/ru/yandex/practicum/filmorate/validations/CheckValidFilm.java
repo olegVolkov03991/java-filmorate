@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class CheckValidFilm {
 	private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
-	public void checkValidFilm(Film film, Boolean isCreated) {
+	public void checkValidFilm(Film film) {
 		if (film.getReleaseDate().isBefore(startFilmDate)) {
 			throw new ValidationException("Релиз раньше 28 декабря 1895 года");
 		}

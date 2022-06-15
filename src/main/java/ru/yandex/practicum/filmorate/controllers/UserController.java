@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.validations.CheckValidUser;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -20,9 +21,9 @@ import java.util.Map;
 
 public class UserController {
 
-    private IdGenerator id = new IdGenerator();
-    private Map<Long, User> users = new HashMap<>();
-    private CheckValidUser checkValidUser;
+    private final IdGenerator id = new IdGenerator();
+    private final Map<Long, User> users = new HashMap<>();
+    private final CheckValidUser checkValidUser;
 
     @Autowired
     public UserController(CheckValidUser checkValidUser) {
@@ -32,7 +33,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("запрос получен к эндпоинту /users");
-        checkValidUser.checkValidUser(user, true);
+        checkValidUser.checkValidUser(user);
         user.setId(id.generator());
         if (users.containsKey(user.getId())) {
             log.info("Ошибка добавления: " + user.getName());
@@ -56,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ArrayList<User> allUsers() {
+    public List<User> allUsers() {
         return new ArrayList<>(users.values());
     }
 }

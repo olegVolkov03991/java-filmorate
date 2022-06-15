@@ -22,9 +22,9 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
-    private IdGenerator id = new IdGenerator();
-    private Map<Integer, Film> films = new HashMap<>();
-    private CheckValidFilm checkValidFilm;
+    private final IdGenerator id = new IdGenerator();
+    private final Map<Integer, Film> films = new HashMap<>();
+    private final CheckValidFilm checkValidFilm;
 
     @Autowired
     public FilmController(CheckValidFilm checkValidFilm) {
@@ -33,7 +33,7 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<Film> create(@Valid @RequestBody Film film){
-        checkValidFilm.checkValidFilm(film, false);
+        checkValidFilm.checkValidFilm(film);
         log.info("Запрос получен к эндпоинту /films");
         film.setId(id.generator());
         if(films.containsKey(film.getId())){
