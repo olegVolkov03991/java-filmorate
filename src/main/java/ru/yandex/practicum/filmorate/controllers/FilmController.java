@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class FilmController {
 
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
     private final FilmValidator filmValidator;
     private final IdGenerator idGenerator;
 
@@ -48,6 +48,7 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film){
+        log.info("Запрос получен к эндпоинту /films");
         try {
             if(film.getId() < 1){
                 throw new ValidationException("Film id less then 1");
@@ -63,7 +64,7 @@ public class FilmController {
     @GetMapping
     public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
-        System.out.println("total films: " + films.size());
+        System.out.println("total films: " + films.size() + films.values());
         return new ArrayList<>(films.values());
     }
 }

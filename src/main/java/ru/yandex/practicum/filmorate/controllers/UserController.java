@@ -49,6 +49,7 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user){
+        log.info("Запрос получен к эндпоинту /users");
         try{
             if(user.getId() < 1){
                 throw new ValidationException("user id less then 1");
