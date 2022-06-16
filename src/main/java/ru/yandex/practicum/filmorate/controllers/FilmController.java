@@ -1,78 +1,70 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.service.IdGenerator;
+import ru.yandex.practicum.filmorate.validations.FilmValidator;
 
-import java.time.LocalDate;
-import java.util.List;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+
 public class FilmController {
 
-    private int id = 1;
-    private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
+    private final Map<Long, Film> films = new HashMap<>();
+    private final FilmValidator filmValidator;
+    private final IdGenerator idGenerator;
 
-    private final FilmStorage filmStorage;
-
-    public FilmController(FilmStorage filmStorage){
-        this.filmStorage = filmStorage;
+    @Autowired
+    public FilmController(IdGenerator idGenerator, FilmValidator filmValidator) {
+        this.idGenerator = idGenerator;
+        this.filmValidator = filmValidator;
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film){
-        log.info("Запрос получен к эндпоинту /film");
-        checkValidFilm(film, true);
-        if(filmStorage.create(id, film)!=null && film.getId()>0){
-            film.setId(id);
-            return null;
-        } else{
-            throw new NotFoundObjectException("Такой фильм уже есть или id имеет отрицательное значение");
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
+        log.info("Запрос получен к эндпоинту /films");
+        filmValidator.validate(film);
+        film.setId(idGenerator.generator());
+        if (films.containsKey(film.getId())) {
+            log.info("ошибка добавления: " + film.getName());
+            return ResponseEntity.badRequest().body(film);
         }
+        films.put(film.getId(), film);
+        return ResponseEntity.ok().body(film);
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film){
-        log.info("Получен запрос к эндпоинту /film");
-        checkValidFilm(film, false);
-        if(filmStorage.update(film.getId(), film)!=null && film.getId() > 0){
-            return (Film) filmStorage.getAllFilms();
-        } else{
-            throw new NotFoundObjectException("Такого фильма нет или id имеет отрицательное значение");
-        }
+    public Film update(@Valid @RequestBody Film film){
+        log.info("Запрос получен к эндпоинту /films");
+        try {
+            if(film.getId() < 1){
+                throw new ValidationException("Film id less then 1");
+            }
+            films.put(film.getId(), film);
+            log.debug("Film updated ", film.getId());
+        } catch (ValidationException e){
+            log.warn(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } return film;
     }
 
     @GetMapping
-    public List<Film> allFilms(){
-        return (List<Film>) filmStorage.getAllFilms();
-    }
-
-    private void checkValidFilm(Film film, Boolean isCreated){
-        if(isCreated){
-            for(Film getFilm:filmStorage.getAllFilms()){
-                if(film.getName().equals(getFilm.getName())&&film.getReleaseDate().equals(film.getReleaseDate())){
-                    throw new ValidationException("такой фильм уже есть");
-                }
-            }
-        }
-
-        if(film.getReleaseDate().isBefore(startFilmDate)){
-            throw new ValidationException("Релиз раньше 28 декабря 1895 года");
-        }
-        if(film.getDuration()<=0){
-            throw new ValidationException("Отрицательная продолжительность фильма");
-        }
-        if(film.getName().isEmpty()){
-            throw new ValidationException("Имя не может быть пустым");
-        }
-
-        if(film.getDescription().length() > 200){
-            throw new ValidationException("Описание не может привышать 200 символов");
-        }
+    public Collection<Film> allFilms(){
+        log.info("Запрос получен к эндпоинту /films");
+        System.out.println("total films: " + films.size());
+        return new ArrayList<>(films.values());
     }
 }

@@ -2,75 +2,69 @@ package ru.yandex.practicum.filmorate.controllers;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundObjectException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.service.IdGenerator;
+import ru.yandex.practicum.filmorate.validations.UserValidator;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 
 public class UserController {
-    private int id;
 
-    private final UserStorage userStorage;
+    private final Map<Long, User> users = new HashMap<>();
+    private final UserValidator userValidator;
+    private final IdGenerator idGenerator;
 
-    public UserController(UserStorage userStorage){
-        this.userStorage = userStorage;
+    @Autowired
+    public UserController(IdGenerator idGenerator, UserValidator userValidator) {
+        this.idGenerator = idGenerator;
+        this.userValidator = userValidator;
     }
 
     @PostMapping
-    public User create(@RequestBody User user){
-        log.info("запрос получен к эндпоинту /user");
-        checkValidUser(user, true);
-        if(userStorage.create(id, user)!=null || user.getId()<0){
-            user.setId(id);
-            return null;
-        } else {
-            throw new NotFoundObjectException("такой пользователь уже есть или id имеет отрицательное значение");
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        log.info("запрос получен к эндпоинту /users");
+        user.setId(idGenerator.generator());
+        if (userValidator.validate(user)) {
+            log.error("Ошибка добавления: " + user.getName());
+            return ResponseEntity.badRequest().body(user);
         }
+        users.put(user.getId(), user);
+        return ResponseEntity.ok().body(user);
     }
 
     @PutMapping
-    public User update(@RequestBody User user){
-        log.info("получен запрос к энпоинту /user");
-        checkValidUser(user, false);
-        if(userStorage.update(user.getId(), user)!=null && user.getId()>0){
-            return userStorage.getUserById(user.getId());
-        } else{
-            throw new NotFoundObjectException("Такого пользователя нет или id отрицательный");
-        }
+    public User update(@Valid @RequestBody User user){
+        log.info("Запрос получен к эндпоинту /users");
+        try{
+            if(user.getId() < 1){
+                throw new ValidationException("user id less then 1");
+            }
+            users.put(user.getId(), user);
+            log.debug("User update ", user.getId());
+        } catch (ValidationException e){
+            log.warn(e.getMessage());
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } return user;
     }
 
     @GetMapping
-    public List<User> allUsers(){
-        return userStorage.getAllUsers();
-    }
-
-    private void checkValidUser(User user, Boolean isCreated){
-        if(isCreated){
-            for(User getUser : userStorage.getAllUsers()){
-                if(user.getEmail().equals(getUser.getEmail())){
-                    throw new ValidationException("Такой пользователь уже есть");
-                }
-            }
-        }
-        if(user.getName()==null||user.getName().isBlank()||user.getName().isEmpty()){
-            user.setName(user.getLogin());
-        }
-        if(user.getLogin().isEmpty() || user.getLogin().isBlank()){
-            throw new ValidationException("Проверьте логин");
-        }
-        if(user.getBirthday().isAfter(LocalDate.now())){
-            throw new ValidationException("Проверьте дату рождения");
-        }
-        if(user.getEmail().isEmpty() || !user.getEmail().contains("@")){
-            throw new ValidationException("Проверьте почту");
-        }
+    public List<User> allUsers() {
+        log.info("Запрос получен к эндпоинту /users");
+        System.out.println("total users: " + users.size());
+        return new ArrayList<>(users.values());
     }
 }
