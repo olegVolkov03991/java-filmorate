@@ -7,10 +7,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 
 @Component
-public class CheckValidFilm {
+public class FilmValidator {
 	private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
-	public void checkValidFilm(Film film) {
+	public void validate(Film film) {
 		if (film.getReleaseDate().isBefore(startFilmDate)) {
 			throw new ValidationException("Релиз раньше 28 декабря 1895 года");
 		}

@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.validations.CheckValidFilm;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.IdGenerator;
+import ru.yandex.practicum.filmorate.validations.FilmValidator;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -20,23 +20,25 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+
 public class FilmController {
 
-    private final IdGenerator id = new IdGenerator();
     private final Map<Integer, Film> films = new HashMap<>();
-    private final CheckValidFilm checkValidFilm;
+    private final FilmValidator filmValidator;
+    private final IdGenerator idGenerator;
 
     @Autowired
-    public FilmController(CheckValidFilm checkValidFilm) {
-        this.checkValidFilm = checkValidFilm;
+    public FilmController(IdGenerator idGenerator, FilmValidator filmValidator) {
+        this.idGenerator = idGenerator;
+        this.filmValidator = filmValidator;
     }
 
     @PostMapping
-    public ResponseEntity<Film> create(@Valid @RequestBody Film film){
-        checkValidFilm.checkValidFilm(film);
+    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
         log.info("Запрос получен к эндпоинту /films");
-        film.setId(id.generator());
-        if(films.containsKey(film.getId())){
+        filmValidator.validate(film);
+        film.setId(idGenerator.generator());
+        if (films.containsKey(film.getId())) {
             log.info("ошибка добавления: " + film.getName());
             return ResponseEntity.badRequest().body(film);
         }

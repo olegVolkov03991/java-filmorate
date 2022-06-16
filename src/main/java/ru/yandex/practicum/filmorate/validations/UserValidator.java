@@ -7,9 +7,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 
 @Component
-public class CheckValidUser {
+public class UserValidator {
 
-	public void checkValidUser(User user){
+	public void validate(User user){
 		if(user.getName()==null||user.getName().isBlank()||user.getName().isEmpty()){
 			user.setName(user.getLogin());
 		}
