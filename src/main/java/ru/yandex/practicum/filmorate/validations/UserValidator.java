@@ -9,8 +9,8 @@ import java.time.LocalDate;
 @Component
 public class UserValidator {
 
-	public void validate(User user){
-		if(user.getName()==null||user.getName().isBlank()||user.getName().isEmpty()){
+	public boolean validate(User user){
+		if(user.getName().isEmpty()){
 			user.setName(user.getLogin());
 		}
 		if(user.getLogin().isEmpty() || user.getLogin().isBlank()){
@@ -22,5 +22,6 @@ public class UserValidator {
 		if(user.getEmail().isEmpty() || !user.getEmail().contains("@")){
 			throw new ValidationException("Проверьте почту");
 		}
+		return false;
 	}
 }

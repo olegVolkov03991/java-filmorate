@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 public class IdGenerator {
 	private int id;
 	public int generator(){
-		return ++id;
+		return id + 1;
 	}
 }

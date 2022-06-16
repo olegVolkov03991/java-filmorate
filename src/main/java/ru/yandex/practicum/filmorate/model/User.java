@@ -22,7 +22,6 @@ public class User {
     private String email;
     @NotBlank
     private String login;
-    @NonNull
     private String name;
     @NonNull
     private LocalDate birthday;

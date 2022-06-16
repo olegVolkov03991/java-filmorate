@@ -54,7 +54,7 @@ public class FilmController {
                 throw new ValidationException("Film id less then 1");
             }
             films.put(film.getId(), film);
-            log.debug("Film updated  ", film.getId());
+            log.debug("Film updated ", film.getId());
         } catch (ValidationException e){
             log.warn(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -64,7 +64,7 @@ public class FilmController {
     @GetMapping
     public Collection<Film> allFilms(){
         log.info("Запрос получен к эндпоинту /films");
-        System.out.println("total films: " + films.size() + films.values());
+        System.out.println("total films: " + films.size());
         return new ArrayList<>(films.values());
     }
 }

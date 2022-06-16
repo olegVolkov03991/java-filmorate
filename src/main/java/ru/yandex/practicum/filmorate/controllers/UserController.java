@@ -37,10 +37,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("запрос получен к эндпоинту /users");
-        userValidator.validate(user);
         user.setId(idGenerator.generator());
-        if (users.containsKey(user.getId())) {
-            log.info("Ошибка добавления: " + user.getName());
+        if (userValidator.validate(user)) {
+            log.error("Ошибка добавления: " + user.getName());
             return ResponseEntity.badRequest().body(user);
         }
         users.put(user.getId(), user);
