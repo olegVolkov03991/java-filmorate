@@ -1,31 +1,35 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Film{
     private long id;
-    @NotEmpty
+    @NotBlank
     @NonNull
     private String name;
-    @NonNull
-    @Size(max = 200)
+    @Length(max = 200)
     private String description;
     @NonNull
     private LocalDate releaseDate;
     @NonNull
-    @Positive(message = "Продолжительность фильма не может быть отрицательной")
+    @Positive(message = "Movie duration cannot be negative")
     private int duration;
+    private Set<Long> likes = new HashSet<>();
+
+    public Set<Long> getLikes() {
+        return likes;
+    }
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;

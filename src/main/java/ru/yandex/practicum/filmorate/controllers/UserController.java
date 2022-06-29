@@ -3,20 +3,13 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.IdGenerator;
-import ru.yandex.practicum.filmorate.validations.UserValidator;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -24,47 +17,54 @@ import java.util.Map;
 
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
-    private final UserValidator userValidator;
-    private final IdGenerator idGenerator;
+    private final UserService userService;
+
 
     @Autowired
-    public UserController(IdGenerator idGenerator, UserValidator userValidator) {
-        this.idGenerator = idGenerator;
-        this.userValidator = userValidator;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        log.info("запрос получен к эндпоинту /users");
-        user.setId(idGenerator.generator());
-        if (userValidator.validate(user)) {
-            log.error("Ошибка добавления: " + user.getName());
-            return ResponseEntity.badRequest().body(user);
-        }
-        users.put(user.getId(), user);
-        return ResponseEntity.ok().body(user);
+    public User createUser(@Valid @RequestBody User user) {
+        return userService.createUser(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user){
-        log.info("Запрос получен к эндпоинту /users");
-        try{
-            if(user.getId() < 1){
-                throw new ValidationException("user id less then 1");
-            }
-            users.put(user.getId(), user);
-            log.debug("User update ", user.getId());
-        } catch (ValidationException e){
-            log.warn(e.getMessage());
-            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } return user;
+    public User updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
+
     }
 
     @GetMapping
-    public List<User> allUsers() {
-        log.info("Запрос получен к эндпоинту /users");
-        System.out.println("total users: " + users.size());
-        return new ArrayList<>(users.values());
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> userGetFriends(@PathVariable Long id) {
+        return userService.userGetFriends(id);
+    }
+
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<User> getCommonFriends(@PathVariable("id") Long id1, @PathVariable("otherId") Long id2) {
+        return userService.getCommonFriends(id1, id2);
     }
 }

@@ -9,6 +9,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,11 +27,12 @@ public class User {
     private String name;
     @NonNull
     private LocalDate birthday;
+    private Set<Long> friends = new HashSet<>();
 
-    public User(String email, String login, String name, LocalDate birthday){
+    public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
         this.login = login;
-        if(name == null || name.equals("")){
+        if (name == null || name.equals("")) {
             this.name = login;
         } else {
             this.name = name;
