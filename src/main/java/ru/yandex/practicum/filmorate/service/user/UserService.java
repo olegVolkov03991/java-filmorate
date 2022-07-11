@@ -46,9 +46,6 @@ public class UserService {
 		userFound(friendId);
 		getUserById(userId).getFriends().add(friendId);
 		getUserById(friendId).getFriends().add(userId);
-		System.out.println(userStorage.getUserById(userId).getFriends());
-		System.out.println(userStorage.getUserById(friendId).getFriends());
-
 	}
 
 	public void userFound(Long userId) {

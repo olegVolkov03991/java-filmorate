@@ -10,11 +10,10 @@ import java.time.LocalDate;
 @Slf4j
 @Component
 public class FilmValidator {
-	public final static LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
+	public final static LocalDate START_FILM_DATE = LocalDate.of(1895, 12, 28);
 
 	public boolean validate(Film film) {
-		if (film.getReleaseDate().isBefore(startFilmDate)) {
-			log.error("ERROR");
+		if (film.getReleaseDate().isBefore(START_FILM_DATE)) {
 			throw new ValidationException("Релиз раньше 28 декабря 1895 года");
 		}
 		return true;

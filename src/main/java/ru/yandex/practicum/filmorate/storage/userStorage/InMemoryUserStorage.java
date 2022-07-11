@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.idGenerator.IdGeneratorUser;
 import ru.yandex.practicum.filmorate.validations.UserValidator;
 
 import javax.validation.Valid;
@@ -19,22 +20,23 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
-
 	private final Map<Long, User> users = new HashMap<>();
 	private final UserValidator userValidator;
+	private IdGeneratorUser idGenerator;
 
 	@Autowired
-	public InMemoryUserStorage(UserValidator userValidator) {
+	public InMemoryUserStorage(UserValidator userValidator, IdGeneratorUser idGenerator) {
 		this.userValidator = userValidator;
+		this.idGenerator = idGenerator;
 	}
 
 	public User createUser(@Valid @RequestBody User user) {
 		log.info("запрос получен");
 		userValidator.validate(user);
-		user.setId(Long.valueOf(users.size() + 1));
+		user.setId(idGenerator.generator());
 		userValidator.validate(user);
 		if (users.containsKey(user.getId())) {
-			throw new UserAlreadyExistException(String.format("позователь с %s логином уже есть"));
+			throw new UserAlreadyExistException(String.format("позователь с " + user.getLogin() + " логином уже есть"));
 		}
 		users.put(user.getId(), user);
 		return user;
@@ -44,7 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
 		log.info("запрос получен");
 		userValidator.validate(user);
 		if (getUserById(user.getId()) == null) {
-			throw new UserNotFoundException(String.format("пользователь не найден"));
+			throw new UserNotFoundException(String.format("user not found"));
 		}
 		users.put(user.getId(), user);
 		return user;

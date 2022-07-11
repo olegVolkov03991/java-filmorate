@@ -17,22 +17,19 @@ public class ErrorHandler {
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public Map<String, String> status400(ValidationException e){
+	public Map<String, String> handle400(ValidationException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
 
 	@ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public Map<String, String> status404(RuntimeException e){
+	public Map<String, String> handle404(RuntimeException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
 
 	@ExceptionHandler({UserAlreadyExistException.class, FileAlreadyExistsException.class})
 	@ResponseStatus(HttpStatus.CONFLICT)
-	public Map<String, String> status409(RuntimeException e) {
+	public Map<String, String> handle409(RuntimeException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
-
-
-
 }

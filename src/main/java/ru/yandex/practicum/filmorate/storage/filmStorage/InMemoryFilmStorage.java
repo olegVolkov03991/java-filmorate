@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.FilmAlreadyExistEcxeption;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.idGenerator.IdGeneratorFilm;
 import ru.yandex.practicum.filmorate.validations.FilmValidator;
 
 import javax.validation.Valid;
@@ -20,20 +20,20 @@ import java.util.Map;
 public class InMemoryFilmStorage implements FilmStorage {
 	private final FilmValidator filmValidator;
 	private final Map<Long, Film> films = new HashMap<>();
+	private IdGeneratorFilm idGenerator;
 
 	@Autowired
-	public InMemoryFilmStorage(FilmValidator filmValidator) {
+	public InMemoryFilmStorage(FilmValidator filmValidator, IdGeneratorFilm idGenerator) {
 		this.filmValidator = filmValidator;
+		this.idGenerator = idGenerator;
 	}
 
 	@Override
-	public Film createFilm(Film film) {
+	public Film createFilm(@Valid @RequestBody Film film) {
 		log.info("Запрос получен");
-		film.setId(Long.valueOf(films.size() + 1));
 		filmValidator.validate(film);
-		if (films.containsKey(film.getId())) {
-			throw new FilmAlreadyExistEcxeption(String.format("film Already"));
-		}
+		film.setId(idGenerator.generator());
+		filmValidator.validate(film);
 		films.put(film.getId(), film);
 		return film;
 	}
@@ -57,7 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 	}
 
 	public Film getFilmById(Long id){
-		log.info("   ");
+		log.info("Запрос получен");
 		if (!films.containsKey(id)) {
 			throw new FilmNotFoundException(String.format("film not found"));
 		}

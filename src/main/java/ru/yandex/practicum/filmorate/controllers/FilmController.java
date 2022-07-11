@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-
 public class FilmController {
 
     private final FilmService filmService;
@@ -30,7 +29,7 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        filmService.UpdateFilm(film);
+        filmService.updateFilm(film);
         return film;
     }
 
