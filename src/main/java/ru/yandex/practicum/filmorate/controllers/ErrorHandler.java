@@ -17,19 +17,31 @@ public class ErrorHandler {
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public Map<String, String> handle400(ValidationException e) {
+	public Map<String, String> handleValidationException(ValidationException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
 
-	@ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class})
+	@ExceptionHandler({UserNotFoundException.class})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public Map<String, String> handle404(RuntimeException e) {
+	public Map<String, String> handleUserFoundEcxeption(RuntimeException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
 
-	@ExceptionHandler({UserAlreadyExistException.class, FileAlreadyExistsException.class})
+	@ExceptionHandler({FilmNotFoundException.class})
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public Map<String, String> handleFilmFoundEcxeption(RuntimeException e) {
+		return Map.of("ERROR", e.getMessage());
+	}
+
+	@ExceptionHandler({UserAlreadyExistException.class})
 	@ResponseStatus(HttpStatus.CONFLICT)
-	public Map<String, String> handle409(RuntimeException e) {
+	public Map<String, String> handleUserAlreadyExistsException(RuntimeException e) {
+		return Map.of("ERROR", e.getMessage());
+	}
+
+	@ExceptionHandler({FileAlreadyExistsException.class})
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public Map<String, String> handleFilmAlreadyExistsException(RuntimeException e) {
 		return Map.of("ERROR", e.getMessage());
 	}
 }

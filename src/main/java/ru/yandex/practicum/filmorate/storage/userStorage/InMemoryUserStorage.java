@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.idGenerator.IdGeneratorUser;
+import ru.yandex.practicum.filmorate.service.idGenerator.UserIdGenerator;
 import ru.yandex.practicum.filmorate.validations.UserValidator;
 
 import javax.validation.Valid;
@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 public class InMemoryUserStorage implements UserStorage {
 	private final Map<Long, User> users = new HashMap<>();
 	private final UserValidator userValidator;
-	private IdGeneratorUser idGenerator;
+	private UserIdGenerator idGenerator;
 
 	@Autowired
-	public InMemoryUserStorage(UserValidator userValidator, IdGeneratorUser idGenerator) {
+	public InMemoryUserStorage(UserValidator userValidator, UserIdGenerator idGenerator) {
 		this.userValidator = userValidator;
 		this.idGenerator = idGenerator;
 	}

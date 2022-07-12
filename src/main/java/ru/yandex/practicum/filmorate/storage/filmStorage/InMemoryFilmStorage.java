@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.idGenerator.IdGeneratorFilm;
+import ru.yandex.practicum.filmorate.service.idGenerator.FilmIdGenerator;
 import ru.yandex.practicum.filmorate.validations.FilmValidator;
 
 import javax.validation.Valid;
@@ -20,10 +20,10 @@ import java.util.Map;
 public class InMemoryFilmStorage implements FilmStorage {
 	private final FilmValidator filmValidator;
 	private final Map<Long, Film> films = new HashMap<>();
-	private IdGeneratorFilm idGenerator;
+	private FilmIdGenerator idGenerator;
 
 	@Autowired
-	public InMemoryFilmStorage(FilmValidator filmValidator, IdGeneratorFilm idGenerator) {
+	public InMemoryFilmStorage(FilmValidator filmValidator, FilmIdGenerator idGenerator) {
 		this.filmValidator = filmValidator;
 		this.idGenerator = idGenerator;
 	}
