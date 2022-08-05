@@ -1,39 +1,40 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Film{
-    private long id;
-    @NotBlank
-    @NonNull
+@NoArgsConstructor
+public class Film {
+    private Integer id;
     private String name;
-    @Length(max = 200)
     private String description;
-    @NonNull
     private LocalDate releaseDate;
-    @NonNull
-    @Positive(message = "Movie duration cannot be negative")
     private int duration;
-    private Set<Long> likes = new HashSet<>();
+    private Mpa mpa;
+    private Set<Genres> genres = new TreeSet<>(Comparator.comparingInt(Genres::getId));
 
-    public Set<Long> getLikes() {
-        return likes;
-    }
-
-    public Film(String name, String description, LocalDate releaseDate, int duration) {
+    public Film(int id, String name, Mpa mpa, String description, LocalDate releaseDate, int duration) {
+        this.id = id;
         this.name = name;
+        this.mpa = mpa;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("name", name);
+        values.put("mpa_id", mpa.getId());
+        values.put("description", description);
+        values.put("release_date", releaseDate);
+        values.put("duration", duration);
+        return values;
     }
 }

@@ -1,42 +1,22 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
     private long id;
+    private String name;
     @NotBlank
-    @NonNull
-    @Size(min = 1, max = 200)
     @Email
     private String email;
     @NotBlank
     private String login;
-    private String name;
-    @NonNull
+    @PastOrPresent
     private LocalDate birthday;
-    private Set<Long> friends = new HashSet<>();
-
-    public User(String email, String login, String name, LocalDate birthday) {
-        this.email = email;
-        this.login = login;
-        if (name == null || name.equals("")) {
-            this.name = login;
-        } else {
-            this.name = name;
-        }
-        this.birthday = birthday;
-    }
 }
