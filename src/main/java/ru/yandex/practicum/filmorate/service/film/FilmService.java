@@ -19,13 +19,15 @@ public class FilmService {
         this.filmDbStorage = filmDbStorage;
     }
 
-    public void createFilm(Film film) {
+    public Film createFilm(Film film) {
         filmDbStorage.createFilm(film).get();
+        return film;
     }
 
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         getFilmById(film.getId());
         filmDbStorage.updateFilm(film).get();
+        return film;
     }
 
     public List<Film> getAllFilm() {
@@ -33,7 +35,7 @@ public class FilmService {
     }
 
     public Film getFilmById(int id) {
-        return filmDbStorage.getFilmById(id).orElseThrow(() -> new FilmNotFoundException("qwe"));
+        return filmDbStorage.getFilmById(id).orElseThrow(() -> new FilmNotFoundException(String.format("Film with id %s not found", id)));
     }
 
     public void addLike(int film_id, int user_id) {

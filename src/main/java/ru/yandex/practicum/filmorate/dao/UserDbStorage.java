@@ -22,18 +22,6 @@ import java.util.Set;
 
 @Component
 public class UserDbStorage implements UserStorage {
-    String sqlCreateUser = "INSERT INTO USER (NAME, EMAIL, LOGIN, BIRTHDAY)" + "VALUES (?,?,?,?)";
-    String sqlUpdateUser = "UPDATE USER SET NAME=?, EMAIL=?, LOGIN=?, BIRTHDAY=?";
-    String sqlGetAllUsers = "SELECT * FROM USER";
-    String sqlgetUserBuId = "SELECT * FROM USER WHERE USER_ID=?";
-    String sqlStatus1 = "SELECT STATUS FROM FRIENDSHIP WHERE USER1_ID=? AND USER1_ID=?";
-    String sqlStatus2 = "SELECT STATUS FROM FRIENDSHIP WHERE USER1_ID=? AND USER1_ID=?";
-    String sqlUpdateFriendShip = "UPDATE FRIENDSHIP SET " + "STATUS = ? " + "WHERE ID = ?";
-    String sqlInsertFriendShip = "INSERT INTO FRIENDSHIP (USER1_ID, USER2_ID, STATUS) " + "VALUES (?, ?, ?)";
-    String sqlUserGetFriend = "SELECT U.* FROM FRIENDSHIP FS LEFT JOIN USER U ON FS.USER2_ID = U.USER_ID WHERE FS.USER1_ID = ?";
-    String sqlUserRemoveFriend = "DELETE FROM FRIENDSHIP WHERE USER1_ID=? AND USER2_ID=?";
-    String sqlGetFriendsIdListBuUserId = "SELECT USER2_ID FROM FRIENDSHIP WHERE USER1_ID = ?";
-
     private final JdbcTemplate jdbcTemplate;
     private final UserValidator userValidator;
 
@@ -44,6 +32,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void createUser(User user) {
+        String sqlCreateUser = "INSERT INTO USER (NAME, EMAIL, LOGIN, BIRTHDAY)" + "VALUES (?,?,?,?)";
         userValidator.validate(user);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -59,6 +48,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void updateUser(@Valid User user) {
+        String sqlUpdateUser = "UPDATE USER SET NAME=?, EMAIL=?, LOGIN=?, BIRTHDAY=?";
         userValidator.validate(user);
         if(user.getId() < 0){
             throw new UserNotFoundException("negative id");
@@ -68,11 +58,13 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
+        String sqlGetAllUsers = "SELECT * FROM USER";
         return jdbcTemplate.query(sqlGetAllUsers, this::mapRowToUser);
     }
 
     @Override
     public User getUserById(int id) {
+        String sqlgetUserBuId = "SELECT * FROM USER WHERE USER_ID=?";
         if(id<0){
             throw new UserNotFoundException("negative id");
         }
@@ -80,33 +72,38 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void userAddFriend(int user_id, int friend_id) {
-        if(friend_id<0){
+    public void userAddFriend(int useId, int friendId) {
+        String sqlStatus1 = "SELECT STATUS FROM FRIENDSHIP WHERE USER1_ID=? AND USER1_ID=?";
+        String sqlStatus2 = "SELECT STATUS FROM FRIENDSHIP WHERE USER1_ID=? AND USER1_ID=?";
+        String sqlUpdateFriendShip = "UPDATE FRIENDSHIP SET " + "STATUS = ? " + "WHERE ID = ?";
+        String sqlInsertFriendShip = "INSERT INTO FRIENDSHIP (USER1_ID, USER2_ID, STATUS) " + "VALUES (?, ?, ?)";
+        if(friendId<0){
             throw new UserNotFoundException("negative_id");
         }
-        if(user_id<0){
+        if(useId<0){
             throw new UserNotFoundException("negative id");
         }
-        SqlRowSet status1 = jdbcTemplate.queryForRowSet(sqlStatus1, user_id, friend_id);
-        SqlRowSet status2 = jdbcTemplate.queryForRowSet(sqlStatus2, friend_id, user_id);
-
+        SqlRowSet status1 = jdbcTemplate.queryForRowSet(sqlStatus1, useId, friendId);
+        SqlRowSet status2 = jdbcTemplate.queryForRowSet(sqlStatus2, friendId, useId);
         if (status1.toString().equals("Confirmed")) {
         } else if (status1.toString().equals("Not Confirmed")) {
         } else if (status2.toString().equals("Confirmed")) {
         } else if (status2.toString().equals("Not Confirmed")) {
-            jdbcTemplate.update(sqlUpdateFriendShip, "Confirmed", user_id);
+            jdbcTemplate.update(sqlUpdateFriendShip, "Confirmed", useId);
         } else {
-            jdbcTemplate.update(sqlInsertFriendShip, user_id, friend_id, "Not Confirmed");
+            jdbcTemplate.update(sqlInsertFriendShip, useId, friendId, "Not Confirmed");
         }
     }
 
     @Override
-    public List<User> userGetFriend(int user_id) {
-        return jdbcTemplate.query(sqlUserGetFriend, this::mapRowToUser, user_id);
+    public List<User> userGetFriend(int userId) {
+        String sqlUserGetFriend = "SELECT U.* FROM FRIENDSHIP FS LEFT JOIN USER U ON FS.USER2_ID = U.USER_ID WHERE FS.USER1_ID = ?";
+        return jdbcTemplate.query(sqlUserGetFriend, this::mapRowToUser, userId);
     }
 
     @Override
     public void userRemoveFriend(int userId, int friendId) {
+        String sqlUserRemoveFriend = "DELETE FROM FRIENDSHIP WHERE USER1_ID=? AND USER2_ID=?";
         jdbcTemplate.update(sqlUserRemoveFriend, userId, friendId);
     }
 
@@ -121,6 +118,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     public Set<Integer> getFriendsIdListByUserId(int id) {
+        String sqlGetFriendsIdListBuUserId = "SELECT USER2_ID FROM FRIENDSHIP WHERE USER1_ID = ?";
         return new HashSet<>(jdbcTemplate.query(sqlGetFriendsIdListBuUserId, (rs, friend_id) -> rs.getInt("user2_id"), id));
     }
 }

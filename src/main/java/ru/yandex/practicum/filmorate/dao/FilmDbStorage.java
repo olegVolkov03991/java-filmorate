@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -19,9 +20,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
-@Component
-@Primary
 @Slf4j
+@Primary
+@Component
 public class FilmDbStorage implements FilmStorage {
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmValidator filmValidator) {
@@ -30,37 +31,28 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private final JdbcTemplate jdbcTemplate;
-    FilmValidator filmValidator;
-
-    String sqlUpdateFilm = "UPDATE FILM SET NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID=? WHERE FILM_ID = ?";
-    String sqlGetPopularFilm = "SELECT * FROM FILM LEFT JOIN LIKES ON LIKES.FILM_ID = FILM.FILM_ID GROUP BY FILM.FILM_ID ORDER BY COUNT(LIKES.USER_ID) DESC LIMIT ?";
-    String sqlGetSetMpa = "SELECT * FROM MPA WHERE MPA_ID = ?";
-    String sqlDelete = "DELETE FROM FILM WHERE FILM_ID = ?";
-    String sqlLike = "INSERT INTO LIKES(FILM_ID, USER_ID) " + "VALUES(?,?)";
-    String sqlGetAllFilm = "SELECT * FROM FILM";
-    String sqlQueryGenreId = "SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ? GROUP BY GENRE_ID";
-    String sqlQueryGenreFull = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
-    String sqlAddFilmsGenre = "MERGE INTO FILM_GENRE(FILM_ID, GENRE_ID) VALUES (?, ?)";
-    String sqlDeleteFilmGenres = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
-    String sqlGetFilmById = "SELECT * FROM FILM WHERE FILM_ID = ?";
-    String sqlAddLike = "DELETE FROM LIKES WHERE FILM_ID=? AND USER_ID=?";
+    private final FilmValidator filmValidator;
 
     @Override
     public Optional<Film> createFilm(@Valid Film film) {
-        filmValidator.validate(film);
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("film")
-                .usingGeneratedKeyColumns("film_id");
-        film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
-        film.getGenres().forEach(genre -> addFilmsGenre(film.getId(), genre.getId()));
-        film.setGenres(new HashSet<>(getFilmGenres(film.getId())));
-        return Optional.of(film);
+        try {
+            filmValidator.validate(film);
+            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName("film")
+                    .usingGeneratedKeyColumns("film_id");
+            film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
+            film.getGenres().forEach(genre -> addFilmsGenre(film.getId(), genre.getId()));
+            film.setGenres(new HashSet<>(getFilmGenres(film.getId())));
+        } catch (Exception e){
+            throw new ValidationException("Error program");
+        } return Optional.of(film);
     }
 
     @Override
     public Optional<Film> updateFilm(Film film) {
+        String sqlUpdateFilm = "UPDATE FILM SET NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID=? WHERE FILM_ID = ?";
         if (getFilmById(film.getId()).isEmpty()) {
-            throw new FilmNotFoundException("NO_SUCH_FILM");
+            throw new FilmNotFoundException(String.format("Film with id %s not found", film.getId()));
         }
         jdbcTemplate.update(sqlUpdateFilm,
                 film.getName(),
@@ -76,6 +68,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> getPopularFilm(int count) {
+        String sqlGetPopularFilm = "SELECT * FROM FILM LEFT JOIN LIKES ON LIKES.FILM_ID = FILM.FILM_ID GROUP BY FILM.FILM_ID ORDER BY COUNT(LIKES.USER_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sqlGetPopularFilm, this::mapRowToFilm, count);
     }
 
@@ -92,6 +85,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Mpa getSetMpa(ResultSet rs) throws SQLException {
+        String sqlGetSetMpa = "SELECT * FROM MPA WHERE MPA_ID = ?";
         Mpa mpa = new Mpa();
         mpa.setId(rs.getInt("mpa_id"));
         mpa.setName(Objects.requireNonNull(jdbcTemplate.queryForObject(sqlGetSetMpa, this::mapRowToMpa, mpa.getId())).getName());
@@ -107,35 +101,40 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void delete(Film film) {
+        String sqlDelete = "DELETE FROM FILM WHERE FILM_ID = ?";
         if (jdbcTemplate.update(sqlDelete, film.getId()) > 0) {
             log.info("Фильм с ID {} был удален", film.getId());
-        } else throw new RuntimeException("Не удалось удалить фильм с id " + film.getId());
+        } else throw new RuntimeException(String.format("Film with id %s not found", film.getId()));
     }
 
     @Override
     public void addLike(int filmId, int userId) {
+        String sqlLike = "INSERT INTO LIKES(FILM_ID, USER_ID) " + "VALUES(?,?)";
         jdbcTemplate.update(sqlLike, filmId, userId);
     }
 
     @Override
     public void filmRemoveLike(int filmId, int userId) {
+        String sqlDeleteLike = "DELETE FROM LIKES WHERE FILM_ID=? AND USER_ID=?";
         if (getFilmById(filmId).isEmpty()) {
-           throw new FilmNotFoundException("film not found");
+           throw new FilmNotFoundException(String.format("Film with id %s not found", filmId));
         }
         if (userId < 0) {
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException(String.format("Film with id %s not found", filmId));
         }
-        jdbcTemplate.update(sqlAddLike, filmId, userId);
+        jdbcTemplate.update(sqlDeleteLike, filmId, userId);
     }
 
     @Override
     public List<Film> getAllFilms() {
+        String sqlGetAllFilm = "SELECT * FROM FILM";
         return jdbcTemplate.query(sqlGetAllFilm, this::mapRowToFilm);
     }
 
     public Optional<Film> getFilmById(int id) {
+        String sqlGetFilmById = "SELECT * FROM FILM WHERE FILM_ID = ?";
         if (id < 0) {
-            log.error("negative id");
+            log.error(String.format("Film with id %s is negative", id));
         }
         List<Film> filmRows = jdbcTemplate.query(sqlGetFilmById, this::mapRowToFilm, id);
         if (filmRows.size() > 0) {
@@ -147,14 +146,18 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public void deleteFilmGenres(int filmID) {
+        String sqlDeleteFilmGenres = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlDeleteFilmGenres, filmID);
     }
 
     public void addFilmsGenre(int filmId, int genreId) {
+        String sqlAddFilmsGenre = "MERGE INTO FILM_GENRE(FILM_ID, GENRE_ID) VALUES (?, ?)";
         jdbcTemplate.update(sqlAddFilmsGenre, filmId, genreId);
     }
 
     public Set<Genres> getFilmGenres(int filmID) {
+        String sqlQueryGenreId = "SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ?";
+        String sqlQueryGenreFull = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
         Set<Genres> resultList = new TreeSet<>(Comparator.comparingInt(Genres::getId));
         List<Integer> listOfGenres = jdbcTemplate.queryForList(sqlQueryGenreId, Integer.class, filmID);
         for (int genreId : listOfGenres) {

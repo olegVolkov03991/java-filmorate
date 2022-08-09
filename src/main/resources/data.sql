@@ -6,8 +6,8 @@ MERGE INTO GENRES (GENRE_ID, NAME)
            (5, 'Документальный'),
            (6, 'Боевик');
 
-MERGE INTO mpa VALUES (1, 'G');
-MERGE INTO mpa VALUES (2, 'PG');
-MERGE INTO mpa VALUES (3, 'PG-13');
-MERGE INTO mpa VALUES (4, 'R');
-MERGE INTO mpa VALUES (5, 'NC-17');
+MERGE INTO MPA VALUES (1, 'G');
+MERGE INTO MPA VALUES (2, 'PG');
+MERGE INTO MPA VALUES (3, 'PG-13');
+MERGE INTO MPA VALUES (4, 'R');
+MERGE INTO MPA VALUES (5, 'NC-17');

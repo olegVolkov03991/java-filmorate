@@ -15,17 +15,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
-    String sqlMpaGet = "SELECT * FROM MPA WHERE MPA_ID=?";
-    String sqlMpaGetAll = "SELECT * FROM MPA";
 
     @Override
     public Mpa MpaGet(int id) {
-        if(id<0){
+        String sqlMpaGet = "SELECT * FROM MPA WHERE MPA_ID=?";
+        if (id < 0) {
             throw new FilmNotFoundException("negative id");
-        }return jdbcTemplate.queryForObject(sqlMpaGet, this::mapRowToMpa, id);
+        }
+        return jdbcTemplate.queryForObject(sqlMpaGet, this::mapRowToMpa, id);
     }
 
     public List<Mpa> mpaGetAll() {
+        String sqlMpaGetAll = "SELECT * FROM MPA";
         return jdbcTemplate.query(sqlMpaGetAll, this::mapRowToMpa);
     }
 

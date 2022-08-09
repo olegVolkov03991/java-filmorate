@@ -23,14 +23,12 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
-        filmService.createFilm(film);
-        return film;
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        filmService.updateFilm(film);
-        return film;
+        return filmService.updateFilm(film);
     }
 
     @GetMapping
@@ -60,9 +58,6 @@ public class FilmController {
 
     @DeleteMapping("/{id}")
     public void delete(@Valid @PathVariable int id) {
-        log.trace(String.valueOf(id));
-
         filmService.delete(id);
     }
 }
-

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.storage.genreStorage.GenreStorage;
 
@@ -19,13 +20,11 @@ public class GenreDbStorage implements GenreStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    String sqlGetGenresById = "select * from GENRES where GENRE_ID = ?";
-    String sqlGetGenresAll = "select * from genres";
-
     @Override
-    public Optional<Genres> getGenreByID(int id) {
+    public Optional<Genres> getGenreById(int id) {
+        String sqlGetGenresById = "select * from GENRES where GENRE_ID = ?";
         if (id < 0) {
-            throw new FilmNotFoundException("qwe");
+            throw new FilmNotFoundException("negative id" + id);
         }
         List<Genres> genreRows = jdbcTemplate.query(sqlGetGenresById, this::makeGenre, id);
         if (genreRows.size() > 0) {
@@ -37,9 +36,9 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public List<Genres> genreGetAll() {
+    public List<Genres> getGenreAll() {
+        String sqlGetGenresAll = "select * from genres";
         return jdbcTemplate.query(sqlGetGenresAll, this::makeGenre);
-
     }
 
     private Genres makeGenre(ResultSet rs, int rowNum) throws SQLException {
