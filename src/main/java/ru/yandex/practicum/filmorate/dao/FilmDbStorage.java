@@ -167,20 +167,3 @@ public class FilmDbStorage implements FilmStorage {
         return resultList;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
