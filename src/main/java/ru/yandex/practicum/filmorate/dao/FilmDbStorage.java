@@ -157,7 +157,7 @@ public class FilmDbStorage implements FilmStorage {
 
     public Set<Genres> getFilmGenres(int filmID) {
         String sqlQueryGenreId = "SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = ?";
-        String sqlQueryGenreFull = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
+        String sqlQueryGenreFull = "SELECT * FROM GENRES WHERE GENRE_ID = ? group by genre_id";
         Set<Genres> resultList = new TreeSet<>(Comparator.comparingInt(Genres::getId));
         List<Integer> listOfGenres = jdbcTemplate.queryForList(sqlQueryGenreId, Integer.class, filmID);
         for (int genreId : listOfGenres) {
