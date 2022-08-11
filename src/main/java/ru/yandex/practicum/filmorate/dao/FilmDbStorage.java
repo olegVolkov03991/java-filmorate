@@ -42,7 +42,7 @@ public class FilmDbStorage implements FilmStorage {
                     .usingGeneratedKeyColumns("film_id");
             film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
             film.getGenres().forEach(genre -> addFilmsGenre(film.getId(), genre.getId()));
-            film.setGenres(new HashSet<>(getFilmGenres(film.getId())));
+            film.setGenres(new LinkedHashSet<>(getFilmGenres(film.getId())));
         } catch (Exception e){
             throw new ValidationException("Error program");
         } return Optional.of(film);
@@ -63,7 +63,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         deleteFilmGenres(film.getId());
         film.getGenres().forEach(genre -> addFilmsGenre(film.getId(), genre.getId()));
-        film.setGenres(new HashSet<>(getFilmGenres(film.getId())));
+        film.setGenres(new LinkedHashSet<>(getFilmGenres(film.getId())));
         return Optional.of(film);
     }
 
@@ -80,7 +80,7 @@ public class FilmDbStorage implements FilmStorage {
         int duration = rs.getInt("duration");
         Mpa mpa = getSetMpa(rs);
         Film film = new Film(id, name, mpa, description, releaseDate, duration);
-        film.setGenres(new HashSet<>(getFilmGenres(id)));
+        film.setGenres(new LinkedHashSet<>(getFilmGenres(id)));
         return film;
     }
 
