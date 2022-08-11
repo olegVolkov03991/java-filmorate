@@ -50,7 +50,7 @@ public class UserDbStorage implements UserStorage {
     public void updateUser(@Valid User user) {
         String sqlUpdateUser = "UPDATE USER SET NAME=?, EMAIL=?, LOGIN=?, BIRTHDAY=?";
         userValidator.validate(user);
-        if(user.getId() < 0){
+        if (user.getId() < 0) {
             throw new UserNotFoundException("negative id");
         }
         jdbcTemplate.update(sqlUpdateUser, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday());
@@ -65,10 +65,10 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUserById(int id) {
         String sqlgetUserBuId = "SELECT * FROM USER WHERE USER_ID=?";
-        if(id<0){
+        if (id < 0) {
             throw new UserNotFoundException("negative id");
         }
-        return jdbcTemplate.queryForObject(sqlgetUserBuId, this:: mapRowToUser, id);
+        return jdbcTemplate.queryForObject(sqlgetUserBuId, this::mapRowToUser, id);
     }
 
     @Override
@@ -77,10 +77,10 @@ public class UserDbStorage implements UserStorage {
         String sqlStatus2 = "SELECT STATUS FROM FRIENDSHIP WHERE USER1_ID=? AND USER1_ID=?";
         String sqlUpdateFriendShip = "UPDATE FRIENDSHIP SET " + "STATUS = ? " + "WHERE ID = ?";
         String sqlInsertFriendShip = "INSERT INTO FRIENDSHIP (USER1_ID, USER2_ID, STATUS) " + "VALUES (?, ?, ?)";
-        if(friendId<0){
+        if (friendId < 0) {
             throw new UserNotFoundException("negative_id");
         }
-        if(useId<0){
+        if (useId < 0) {
             throw new UserNotFoundException("negative id");
         }
         SqlRowSet status1 = jdbcTemplate.queryForRowSet(sqlStatus1, useId, friendId);
